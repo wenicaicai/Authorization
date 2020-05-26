@@ -1,7 +1,10 @@
+using AuthenricationDbContext;
 using BasicAuthentication.AuthorizationRequirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Security.Claims;
@@ -10,6 +13,13 @@ namespace BasicAuthentication
 {
     public class Startup
     {
+        private IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication("CookiesAuth")
@@ -49,6 +59,11 @@ namespace BasicAuthentication
             services.AddScoped<IAuthorizationHandler, CustomRequireClaimsHandler>();
 
             services.AddControllersWithViews();
+
+            var sqlConnection = _configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<CommonDbContext>(config => config.UseSqlServer(sqlConnection));
+
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

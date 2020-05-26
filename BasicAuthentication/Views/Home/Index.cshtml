@@ -1,1 +1,13 @@
-﻿<h1>Hi Heart</h1>
+﻿
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorizationService
+
+@if ((await authorizationService.AuthorizeAsync(User, "Claim.Mile")).Succeeded)
+{
+    <h1>User has Mile Cliam...</h1>
+}
+else
+{
+    <h1>User has NOT claim..</h1>
+}
+<h1>Hi Heart</h1>
